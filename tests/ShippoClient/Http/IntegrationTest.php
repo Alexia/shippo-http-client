@@ -42,10 +42,6 @@ class IntegrationTest extends TestCase
             "metadata"       => "integration test"
         ];
         $addressFrom = ShippoClient::provider(self::$accessToken)
-            ->setRequestOption('curl.options', [
-                CURLOPT_ENCODING          => 'gzip',
-                CURLE_OPERATION_TIMEOUTED => 30,
-            ])
             ->addresses()->create($param);
         $this->assertInstanceOf('ShippoClient\\Entity\\Address', $addressFrom);
 

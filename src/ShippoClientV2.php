@@ -27,65 +27,59 @@ class ShippoClientV2
         $this->request = $request;
     }
 
-    public function addresses()
+    public function addresses(): Addresses
     {
         return new Addresses($this->request);
     }
 
-    public function parcels()
+    public function parcels(): Parcels
     {
         return new Parcels($this->request);
     }
 
-    public function shipments()
+    public function shipments(): Shipments
     {
         return new Shipments($this->request);
     }
 
-    public function rates()
+    public function rates(): Rates
     {
         return new Rates($this->request);
     }
 
-    public function transactions()
+    public function transactions(): Transactions
     {
         return new Transactions($this->request);
     }
 
-    public function refunds()
+    public function refunds(): Refunds
     {
         return new Refunds($this->request);
     }
 
-    public function tracks()
+    public function tracks(): Tracks
     {
         return new Tracks($this->request);
     }
 
-    public function getAccessToken()
+    public function getAccessToken(): ?string
     {
         return $this->accessToken;
-    }
-
-    public function setRequestOption($keyOrPath, $value)
-    {
-        $this->request->setDefaultOption($keyOrPath, $value);
-
-        return $this;
     }
 
     /**
      * @param string $accessToken
      * @param null|string $apiVersion
+     * @param array $options Guzzle v7 compatible Client options.
      * @return static
      */
-    public static function provider($accessToken, $apiVersion = null)
+    public static function provider(string $accessToken, ?string $apiVersion = null, array $options = []): self
     {
         if (static::$instance !== null && static::$instance->getAccessToken() === $accessToken) {
             return static::$instance;
         }
 
-        static::$instance = new static(new RequestV2($accessToken, $apiVersion));
+        static::$instance = new static(new RequestV2($accessToken, $apiVersion, $options));
 
         return static::$instance;
     }

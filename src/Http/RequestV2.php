@@ -7,17 +7,16 @@ class RequestV2 extends Request
     const BASE_URI = 'https://api.goshippo.com/';
 
     /**
-     * @param $accessToken
-     * @param null $apiVersion
+     * @param string $accessToken
+     * @param null|string $apiVersion
+     * @param array $options Guzzle v7 compatible Client options.
      */
-    public function __construct($accessToken, $apiVersion = null)
+    public function __construct(string $accessToken, ?string $apiVersion = null, array $options = [])
     {
-        parent::__construct($accessToken);
-        $request_headers = ['Authorization' => 'ShippoToken ' . $accessToken];
         if ($apiVersion) {
-            $request_headers['Shippo-API-Version'] = $apiVersion;
+            $options['headers']['Shippo-API-Version'] = $apiVersion;
         }
 
-        $this->delegated->setConfig(['request.options' => ['headers' => $request_headers]]);
+        parent::__construct($accessToken, $options);
     }
 }

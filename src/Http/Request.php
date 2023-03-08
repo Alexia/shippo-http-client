@@ -20,20 +20,23 @@ class Request
     protected $delegated;
     private $mockContainer;
 
-    public function __construct(string $accessToken)
+    public function __construct(string $accessToken, array $options = [])
     {
-        $options = [
+        $defaultOptions = [
             'base_uri' => static::BASE_URI,
-            'headers'  => ['Authorization' => 'ShippoToken ' . $accessToken],
+            'headers'  => [
+                'Authorization'   => 'ShippoToken ' . $accessToken,
+            ],
         ];
+        $defaultOptions += $options;
 
         $this->mockContainer = MockCollection::getInstance();
 
         if ($this->mockContainer->hasAny()) {
-            $options['handler'] = $this->mockContainer->getMockHandlerStack();
+            $defaultOptions['handler'] = $this->mockContainer->getMockHandlerStack();
         }
 
-        $this->delegated = new Client($options);
+        $this->delegated = new Client($defaultOptions);
     }
 
     public function post(string $endPoint, array $body = [])

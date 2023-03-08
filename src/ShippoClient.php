@@ -66,13 +66,6 @@ class ShippoClient
         return $this->accessToken;
     }
 
-    public function setRequestOption($keyOrPath, $value)
-    {
-        $this->request->setDefaultOption($keyOrPath, $value);
-
-        return $this;
-    }
-
     /**
      * @param string $accessToken
      * @return static

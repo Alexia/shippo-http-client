@@ -41,12 +41,7 @@ class IntegrationTest extends TestCase
             "is_residential" => true,
             "metadata"       => "integration test"
         ];
-        $addressFrom = ShippoClientV2::provider(self::$accessToken)
-            ->setRequestOption('curl.options', [
-                CURLOPT_ENCODING          => 'gzip',
-                CURLE_OPERATION_TIMEOUTED => 30,
-            ])
-            ->addresses()->create($param);
+        $addressFrom = ShippoClientV2::provider(self::$accessToken)->addresses()->create($param);
         $this->assertInstanceOf('ShippoClient\\Entity\\Address', $addressFrom);
 
         $addressFromArray = $addressFrom->toArray();

@@ -21,12 +21,7 @@ class InvalidRequestTest extends TestCase
     {
         $this->assertNotFalse($this->accessToken, 'You should set env SHIPPO_PRIVATE_ACCESS_TOKEN.');
         try {
-            ShippoClientV2::provider($this->accessToken)
-                ->setRequestOption('curl.options', [
-                    CURLOPT_ENCODING          => 'gzip',
-                    CURLE_OPERATION_TIMEOUTED => 30,
-                ])
-                ->parcels()->retrieve('invalid objectId');
+            ShippoClientV2::provider($this->accessToken)->parcels()->retrieve('invalid objectId');
             $this->fail('ClientErrorException is expected');
         } catch (ClientErrorException $e) {
             $this->assertSame(404, $e->getStatusCode());
