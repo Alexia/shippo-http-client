@@ -1,10 +1,14 @@
 <?php
+declare(strict_types=1);
+
 namespace ShippoClient\Http;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Exception\ClientErrorResponseException as GuzzleClientErrorException;
-use Guzzle\Http\Exception\ServerErrorResponseException as GuzzleServerErrorException;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use GuzzleHttp\Exception\ClientException as GuzzleClientErrorException;
+use GuzzleHttp\Exception\ServerException as GuzzleServerErrorException;
 use ShippoClient\Http\Request\MockCollection;
 use ShippoClient\Http\Response\Exception\ClientErrorException;
 use ShippoClient\Http\Response\Exception\ServerErrorException;
@@ -16,43 +20,56 @@ class Request
     protected $delegated;
     private $mockContainer;
 
-    public function __construct($accessToken)
+    public function __construct(string $accessToken)
     {
-        $this->delegated = new Client(static::BASE_URI, [
-            'request.options' => [
-                'headers' => ['Authorization' => 'ShippoToken ' . $accessToken],
-            ]
-        ]);
+        $options = [
+            'base_uri' => static::BASE_URI,
+            'headers'  => ['Authorization' => 'ShippoToken ' . $accessToken],
+        ];
+
         $this->mockContainer = MockCollection::getInstance();
+
+        if ($this->mockContainer->hasAny()) {
+            $options['handler'] = $this->mockContainer->getMockHandlerStack();
+        }
+
+        $this->delegated = new Client($options);
     }
 
-    public function post($endPoint, $body = [])
+    public function post(string $endPoint, array $body = [])
     {
-        $this->mockFilter($endPoint);
-        $request = $this->delegated->post($endPoint, null, $body);
+        $request = new GuzzleRequest(
+            'POST',
+            $endPoint,
+            [
+                'form_params' => $body,
+            ]
+        );
         $guzzleResponse = $this->sendWithCheck($request);
 
-        return $guzzleResponse->json();
+        return json_decode((string)$guzzleResponse->getBody(), true);
     }
 
-    public function postWithJsonBody($endPoint, $body = [])
+    public function postWithJsonBody(string $endPoint, array $body = [])
     {
-        $this->mockFilter($endPoint);
-        $request = $this->delegated->post($endPoint, ['Content-Type' => 'application/json']);
-        $request->setBody(json_encode($body));
+        $request = new GuzzleRequest(
+            'POST',
+            $endPoint,
+            ['Content-Type' => 'application/json'],
+            json_encode($body)
+        );
         $guzzleResponse = $this->sendWithCheck($request);
 
-        return $guzzleResponse->json();
+        return json_decode((string)$guzzleResponse->getBody(), true);
     }
 
-    public function get($endPoint, $parameter = [])
+    public function get(string $endPoint, array $parameter = [])
     {
-        $this->mockFilter($endPoint);
         $queryString = http_build_query($parameter);
-        $request = $this->delegated->get("$endPoint?$queryString");
+        $request = new GuzzleRequest('GET', "$endPoint?$queryString");
         $guzzleResponse = $this->sendWithCheck($request);
 
-        return $guzzleResponse->json();
+        return json_decode((string)$guzzleResponse->getBody(), true);
     }
 
     public function setDefaultOption($keyOrPath, $value)
@@ -60,37 +77,24 @@ class Request
         $this->delegated->setDefaultOption($keyOrPath, $value);
     }
 
-    private function sendWithCheck(RequestInterface $request)
+    private function sendWithCheck(GuzzleRequest $request): GuzzleResponse
     {
         try {
-            return $request->send();
+            return $this->delegated->send($request);
         } catch (GuzzleClientErrorException $e) {
             throw new ClientErrorException(
                 $e->getMessage(),
                 $e->getResponse()->getStatusCode(),
-                explode("\r\n", $e->getRequest()->__toString()),
-                explode("\r\n", $e->getResponse()->__toString())
+                $e->getRequest(),
+                $e->getResponse()
             );
         } catch (GuzzleServerErrorException $e) {
             throw new ServerErrorException(
                 $e->getMessage(),
                 $e->getResponse()->getStatusCode(),
-                explode("\r\n", $e->getRequest()->__toString()),
-                explode("\r\n", $e->getResponse()->__toString())
+                $e->getRequest(),
+                $e->getResponse()
             );
-        }
-    }
-
-    /**
-     * ダサい
-     *
-     * @param $endPoint
-     */
-    private function mockFilter($endPoint)
-    {
-        if ($this->mockContainer->has($endPoint)) {
-            $this->delegated->addSubscriber($this->mockContainer->getMockResponse($endPoint));
-            $this->mockContainer->clear();
         }
     }
 }

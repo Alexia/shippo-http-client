@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClientV2\Http\Request\Rates;
 
+use PHPUnit\Framework\TestCase;
 use AssertChain\AssertChain;
 use ShippoClient\ShippoClientV2;
 
@@ -9,7 +11,7 @@ use ShippoClient\ShippoClientV2;
  * Rates objects are created asynchronously.
  * Http request is mocked.
  */
-class ValidRequestTest extends \PHPUnit_Framework_TestCase
+class ValidRequestTest extends TestCase
 {
     use AssertChain;
 
@@ -90,16 +92,16 @@ class ValidRequestTest extends \PHPUnit_Framework_TestCase
             ->notEmpty($responseArray['object_owner'])
             ->notEmpty($responseArray['shipment'])
             ->true($responseArray['available_shippo'])
-            ->internalType('array', $responseArray['attributes'])
-            ->internalType('float', $responseArray['amount'])
+            ->isArray($responseArray['attributes'])
+            ->isFloat($responseArray['amount'])
             ->same("USD", $responseArray['currency'])
-            ->internalType('float', $responseArray['amount_local'])
+            ->isFloat($responseArray['amount_local'])
             ->same("USPS", $responseArray['provider'])
             ->notEmpty($responseArray['provider_image_75'])
             ->notEmpty($responseArray['provider_image_200'])
             ->arrayHasKey('servicelevel_name', $responseArray)
             ->arrayHasKey('servicelevel_terms', $responseArray)
-            ->internalType('int', $responseArray['days'])
+            ->isInt($responseArray['days'])
             ->arrayHasKey('arrives_by', $responseArray)
             ->notEmpty($responseArray['duration_terms'])
             ->true($responseArray['trackable'])
@@ -111,7 +113,7 @@ class ValidRequestTest extends \PHPUnit_Framework_TestCase
             ->arrayHasKey('delivery_attempts', $responseArray)
             ->arrayHasKey('outbound_endpoint', $responseArray)
             ->arrayHasKey('inbound_endpoint', $responseArray)
-            ->internalType('array', $responseArray['messages'])
+            ->isArray($responseArray['messages'])
             ->notEmpty($responseArray['carrier_account']);
     }
 

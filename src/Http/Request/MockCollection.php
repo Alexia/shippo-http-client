@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClient\Http\Request;
 
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 
 class MockCollection
 {
@@ -18,7 +20,7 @@ class MockCollection
     {
     }
 
-    public static function getInstance()
+    public static function getInstance(): self
     {
         if (self::$instance !== null) {
             return self::$instance;
@@ -28,26 +30,35 @@ class MockCollection
         return self::$instance;
     }
 
-    public function has($endPoint)
+    public function has(string $endPoint): bool
     {
         return array_key_exists($endPoint, self::$container);
     }
 
-    /**
-     * @param string $endPoint
-     * @return MockPlugin
-     */
-    public function getMockResponse($endPoint)
-    {
-        $response = new Response(self::$container[$endPoint]['statusCode']);
-        $response->setBody(json_encode(self::$container[$endPoint]['response']));
-        $mock = new MockPlugin();
-        $mock->addResponse($response);
-
-        return $mock;
+    public function hasAny(): bool {
+        return count(self::$container) > 0;
     }
 
-    public function add($path, $statusCode, $response)
+    /**
+     * @param string $endPoint
+     * @return HandlerStack
+     */
+    public function getMockHandlerStack(): HandlerStack
+    {
+        $responses = [];
+        foreach (self::$container as $endPoint => $options) {
+            $responses[] = new Response($options['statusCode'], [], json_encode($options['response']));
+        }
+
+        $mockHandler = new MockHandler(
+            $responses
+        );
+        $handlerStack = HandlerStack::create($mockHandler);
+
+        return $handlerStack;
+    }
+
+    public function add(string $path, int $statusCode, array $response): self
     {
         self::$container[$path] = [
             'statusCode' => $statusCode,
@@ -57,7 +68,7 @@ class MockCollection
         return $this;
     }
 
-    public function clear()
+    public function clear(): void
     {
         self::$container = [];
     }

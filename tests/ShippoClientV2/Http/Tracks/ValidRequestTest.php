@@ -1,12 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClientV2\Http\Tracks;
 
+use PHPUnit\Framework\TestCase;
 use AssertChain\AssertChain;
 use ShippoClient\Http\Response\Exception\ClientErrorException;
 use ShippoClient\ShippoClientV2;
 
-class ValidRequestTest extends \PHPUnit_Framework_TestCase
+class ValidRequestTest extends TestCase
 {
     use AssertChain;
 

@@ -1,14 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClientV2\Http\Request\Transactions;
 
+use PHPUnit\Framework\TestCase;
 use AssertChain\AssertChain;
 use ShippoClient\ShippoClientV2;
 
 /**
  * transaction domain is required purchased account.
  */
-class ValidRequestTest extends \PHPUnit_Framework_TestCase
+class ValidRequestTest extends TestCase
 {
     use AssertChain;
 
@@ -49,15 +51,15 @@ class ValidRequestTest extends \PHPUnit_Framework_TestCase
             ->instanceOf('\\DateTime', $transactionArray['object_updated'])
             ->notEmpty($transactionArray['object_id'])
             ->notEmpty($transactionArray['object_owner'])
-            ->internalType('bool', $transactionArray['was_test'])
+            ->isBool($transactionArray['was_test'])
             ->notEmpty($transactionArray['rate'])
             ->arrayHasKey('tracking_number', $transactionArray)
             ->arrayHasKey('tracking_status', $transactionArray)
-            ->internalType('array', $transactionArray['tracking_history'])
+            ->isArray($transactionArray['tracking_history'])
             ->arrayHasKey('tracking_url_provider', $transactionArray)
             ->arrayHasKey('label_url', $transactionArray)
             ->arrayHasKey('commercial_invoice_url', $transactionArray)
-            ->internalType('array', $transactionArray['messages'])
+            ->isArray($transactionArray['messages'])
             ->arrayHasKey('customs_note', $transactionArray)
             ->arrayHasKey('submission_note', $transactionArray)
             ->arrayHasKey('order', $transactionArray)

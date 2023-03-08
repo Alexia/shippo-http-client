@@ -1,14 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClient\Http\Request\Refunds;
 
+use PHPUnit\Framework\TestCase;
 use AssertChain\AssertChain;
 use ShippoClient\ShippoClient;
 
 /**
  * refunds domain is required purchased account.
  */
-class ValidRequestTest extends \PHPUnit_Framework_TestCase
+class ValidRequestTest extends TestCase
 {
     use AssertChain;
 

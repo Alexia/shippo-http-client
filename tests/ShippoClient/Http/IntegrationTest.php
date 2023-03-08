@@ -1,17 +1,19 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClient\Http;
 
+use PHPUnit\Framework\TestCase;
 use ShippoClient\ShippoClient;
 
 /**
  * ugly and helpful test class
  */
-class IntegrationTest extends \PHPUnit_Framework_TestCase
+class IntegrationTest extends TestCase
 {
     private static $accessToken = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         self::$accessToken = getenv('SHIPPO_PRIVATE_ACCESS_TOKEN');
     }
@@ -67,7 +69,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertSame("api@goshippo.com", $addressFromArray['email']); // casted
         $this->assertTrue($addressFromArray['is_residential']);
         $this->assertSame("", $addressFromArray['ip']);
-        $this->assertInternalType('array', $addressFromArray['messages']);
+        $this->assertIsArray($addressFromArray['messages']);
         $this->assertSame("integration test", $addressFromArray['metadata']);
 
         $param = [
@@ -220,7 +222,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('ShippoClient\\Entity\\Shipment', $shipment);
         $shipmentArray = $shipment->toArray();
-        $this->assertInternalType('array', $shipmentArray['carrier_accounts']);
+        $this->assertIsArray($shipmentArray['carrier_accounts']);
         $this->assertInstanceOf('\\DateTime', $shipmentArray['object_created']);
         $this->assertInstanceOf('\\DateTime', $shipmentArray['object_updated']);
         $this->assertNotEmpty($shipmentArray['object_id']);
@@ -238,11 +240,11 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('', $shipmentArray['customs_declaration']);
         $this->assertSame(0, $shipmentArray['insurance_amount']);
         $this->assertSame('', $shipmentArray['insurance_currency']);
-        $this->assertInternalType('array', $shipmentArray['extra']);
+        $this->assertIsArray($shipmentArray['extra']);
         $this->assertSame('', $shipmentArray['reference_1']);
         $this->assertSame('', $shipmentArray['reference_2']);
         $this->assertNotEmpty($shipmentArray['rates_url']);
-        $this->assertInternalType('array', $shipmentArray['messages']);
+        $this->assertIsArray($shipmentArray['messages']);
         $this->assertSame('', $shipmentArray['metadata']);
 
         $objectIds['shipment'] = $shipment->getObjectId();

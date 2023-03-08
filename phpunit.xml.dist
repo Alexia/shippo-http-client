@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit bootstrap="tests/bootstrap.php">
-    <testsuites>
-        <testsuite name="ShippoClient Test Suite">
-            <directory suffix="Test.php">tests/ShippoClient/</directory>
-        </testsuite>
-        <testsuite name="ShippoClientV2 Test Suite">
-            <directory suffix="Test.php">tests/ShippoClientV2/</directory>
-        </testsuite>
-    </testsuites>
-
-    <filter>
-        <whitelist>
-            <directory>.</directory>
-            <exclude>
-                <directory>./tests</directory>
-                <directory>./vendor</directory>
-                <directory>./build</directory>
-                <directory>./bin</directory>
-            </exclude>
-        </whitelist>
-    </filter>
-
-    <logging>
-        <log type="coverage-clover" target="build/logs/clover.xml"/>
-    </logging>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="tests/bootstrap.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd" cacheDirectory=".phpunit.cache">
+  <coverage>
+    <include>
+      <directory>.</directory>
+    </include>
+    <exclude>
+      <directory>./tests</directory>
+      <directory>./vendor</directory>
+      <directory>./build</directory>
+      <directory>./bin</directory>
+    </exclude>
+    <report>
+      <clover outputFile="build/logs/clover.xml"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="ShippoClient Test Suite">
+      <directory suffix="Test.php">tests/ShippoClient/</directory>
+    </testsuite>
+    <testsuite name="ShippoClientV2 Test Suite">
+      <directory suffix="Test.php">tests/ShippoClientV2/</directory>
+    </testsuite>
+  </testsuites>
+  <logging/>
 </phpunit>

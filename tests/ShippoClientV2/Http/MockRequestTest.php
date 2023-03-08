@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClientV2\Http;
 
+use PHPUnit\Framework\TestCase;
 use ShippoClient\ShippoClientV2;
 
-class MockRequestTest extends \PHPUnit_Framework_TestCase
+class MockRequestTest extends TestCase
 {
     /**
      * @test

@@ -1,16 +1,18 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClient\Http\Parcels;
 
+use PHPUnit\Framework\TestCase;
 use ShippoClient\Http\Response\Exception\ClientErrorException;
 use ShippoClient\ShippoClient;
 
 /**
  * @property string accessToken
  */
-class InvalidRequestTest extends \PHPUnit_Framework_TestCase
+class InvalidRequestTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->accessToken = getenv('SHIPPO_PRIVATE_ACCESS_TOKEN');
     }
@@ -29,8 +31,8 @@ class InvalidRequestTest extends \PHPUnit_Framework_TestCase
         } catch (ClientErrorException $e) {
             $this->assertSame(404, $e->getStatusCode());
             $this->assertNotEmpty($e->getMessage());
-            $this->assertInternalType('array', $e->getRequest());
-            $this->assertInternalType('array', $e->getResponse());
+            $this->assertIsObject($e->getRequest());
+            $this->assertIsObject($e->getResponse());
         }
     }
 }

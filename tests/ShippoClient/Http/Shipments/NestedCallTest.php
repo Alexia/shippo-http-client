@@ -1,14 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace ShippoClient\Http\Shipments;
 
+use PHPUnit\Framework\TestCase;
 use ShippoClient\ShippoClient;
 
-class NestedCallTest extends \PHPUnit_Framework_TestCase
+class NestedCallTest extends TestCase
 {
     private $accessToken;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->accessToken = getenv('SHIPPO_PRIVATE_ACCESS_TOKEN');
     }
@@ -65,7 +67,7 @@ class NestedCallTest extends \PHPUnit_Framework_TestCase
         $shipment = ShippoClient::provider($this->accessToken)->shipments()->createByNestedCall($param);
         $this->assertInstanceOf('ShippoClient\\Entity\\Shipment', $shipment);
         $shipmentArray = $shipment->toArray();
-        $this->assertInternalType('array', $shipmentArray['carrier_accounts']);
+        $this->assertIsArray($shipmentArray['carrier_accounts']);
         $this->assertInstanceOf('\\DateTime', $shipmentArray['object_created']);
         $this->assertInstanceOf('\\DateTime', $shipmentArray['object_updated']);
         $this->assertNotEmpty($shipmentArray['object_id']);
@@ -83,11 +85,11 @@ class NestedCallTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('', $shipmentArray['customs_declaration']);
         $this->assertSame(0, $shipmentArray['insurance_amount']);
         $this->assertSame('', $shipmentArray['insurance_currency']);
-        $this->assertInternalType('array', $shipmentArray['extra']);
+        $this->assertIsArray($shipmentArray['extra']);
         $this->assertArrayHasKey('reference_1', $shipmentArray);
         $this->assertArrayHasKey('reference_2', $shipmentArray);
         $this->assertNotEmpty($shipmentArray['rates_url']);
-        $this->assertInternalType('array', $shipmentArray['messages']);
+        $this->assertIsArray($shipmentArray['messages']);
         $this->assertSame('Customer ID 123456', $shipmentArray['metadata']);
     }
 }
